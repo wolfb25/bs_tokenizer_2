@@ -1,9 +1,3 @@
-/* 
-	 Bootstrap5  (https://www.w3schools.com/bootstrap5/) ; 
-	 mysql tábla megjelenítése; katt eseményre rekord megjelenítése; popup ablakban rekord módosítás 
-	 SQL tokenizer
-*/
-
 const express = require('express');
 const mysql = require('mysql');
 const app    = express();
