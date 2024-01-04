@@ -1,7 +1,7 @@
 const express = require('express');
-const mysql = require('mysql');
-const app    = express();
-const port   = 3000;
+const mysql   = require('mysql');
+const app     = express();
+const port    = 3000;
 const session = require('express-session');
 app.use(express.static('public')); 
 var session_data;
@@ -20,14 +20,14 @@ function strE(s) { return s.replace("'","").replace("\"","").replace("`",""),rep
 
 function gen_SQL(req) {
 
-	const mezők = [ "ID_TERMEK", "NEV", "AR", "MENNYISEG", "MEEGYS"];
-	var where = "";
-	var order  = (req.query.order? parseInt(req.query.order)         :   1);
-	var limit  = (req.query.limit? parseInt(req.query.limit)         : 100);
-	var offset = (req.query.offset? parseInt(req.query.offset)       :   0);
-	var id_kat = (req.query.kategoria? parseInt(req.query.kategoria) :  -1);
-	var név    = (req.query.nev? req.query.nev :  "");
-	var desc   =  order < 0 ? "desc" : "";
+	const mezők = ["ID_TERMEK", "NEV", "AR", "MENNYISEG", "MEEGYS"];
+	var where   =  "";
+	var order   = (req.query.order? parseInt(req.query.order)         :   1);
+	var limit   = (req.query.limit? parseInt(req.query.limit)         : 100);
+	var offset  = (req.query.offset? parseInt(req.query.offset)       :   0);
+	var id_kat  = (req.query.kategoria? parseInt(req.query.kategoria) :  -1);
+	var név     = (req.query.nev? req.query.nev :  "");
+	var desc    =  order < 0 ? "desc" : "";
 	
 	if (order < 0) { order *= -1; }
 
@@ -35,11 +35,12 @@ function gen_SQL(req) {
 	if (név.length > 0)  { where += `NEV like "${név}%" and `; }
 	if (where.length >0) { where  = " where "+where.substring(0, where.length-4);; }
 
-	var sql = 
-		`SELECT ID_TERMEK, NEV, k.KATEGORIA AS KATEGORIA, AR, MENNYISEG, MEEGYS
-		 FROM IT_termekek t INNER JOIN IT_kategoriak k 
-		 ON t.ID_KATEGORIA = k.ID_KATEGORIA ${where} ORDER BY ${mezők[order-1]} ${desc}
-		 limit ${limit} offset ${limit*offset}  ;`;
+	var sql = `
+		SELECT ID_TERMEK, NEV, k.KATEGORIA AS KATEGORIA, AR, MENNYISEG, MEEGYS
+		FROM IT_termekek t INNER JOIN IT_kategoriak k 
+		ON t.ID_KATEGORIA = k.ID_KATEGORIA ${where} ORDER BY ${mezők[order-1]} ${desc}
+		limit ${limit} offset ${limit*offset};
+	`;
 	return (sql);
 }
 

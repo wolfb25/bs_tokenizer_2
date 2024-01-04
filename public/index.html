@@ -15,10 +15,10 @@
 		
 		function ajax_get( urlsor, hova, tipus, aszinkron ) {
 			$.ajax({url: urlsor, type:"get", async:aszinkron, cache:false, dataType:tipus===0?'html':'json',
-				beforeSend:function(xhr) {  }, 
-				success:   function(data) { $(hova).html(data); },
-				error:     function(jqXHR, textStatus, errorThrown) { mySend({text:jqXHR.responseText, tip:"danger", mp:0}); },
-				complete:  function() {  }   
+				beforeSend: function(xhr) {  }, 
+				success:    function(data) { $(hova).html(data); },
+				error:      function(jqXHR, textStatus, errorThrown) { mySend({text:jqXHR.responseText, tip:"danger", mp:0}); },
+				complete:   function() {  }   
 			});
 			return true;
 		};
@@ -26,10 +26,10 @@
 		function ajax_post( urlsor, tipus  ) {
 			var s = "";
 			$.ajax({url: urlsor, type:"post", async:false, cache:false, dataType:tipus===0?'html':'json',
-				beforeSend:function(xhr)   {  }, 
-				success:   function(data)  { s = data; },
-				error:     function(jqXHR, textStatus, errorThrown) {mySend({text:jqXHR.responseText, tip:"danger", mp:0});},
-				complete:  function()      {  } 
+				beforeSend: function(xhr)   {  }, 
+				success:    function(data)  { s = data; },
+				error:      function(jqXHR, textStatus, errorThrown) {mySend({text:jqXHR.responseText, tip:"danger", mp:0});},
+				complete:   function()      {  } 
 			});
 			return s;
 		};  
@@ -50,7 +50,7 @@
 	/*-----------------------------*/
 		function orderby( num )   {
 			ID = 0;
-			ORDER = (ORDER === num) ? num * -1: num;
+			ORDER = (ORDER === num) ? num * -1 : num;
 			Search_rekord();    
 		}
 	
@@ -60,11 +60,13 @@
 	
 			$(document).on("click", "tr.xsor", function () {
 				ID = $(this).attr("id");
-				var r_json = ajax_post("rekord/"+ID, 1 );
-				var s= `<h3>ID: [${r_json[0].ID_TERMEK}] ${r_json[0].NEV}</h3>
-						<h5>${r_json[0].AR},-Ft ${r_json[0].MENNYISEG} ${r_json[0].MEEGYS}</h5>
-						<p>${r_json[0].LEIRAS}</p>
-						<img class="img-fluid" src="${r_json[0].FOTOLINK}"/>`;
+				var r_json = ajax_post("rekord/" + ID, 1);
+				var s = `
+					<h3>ID: [${r_json[0].ID_TERMEK}] ${r_json[0].NEV}</h3>
+					<h5>${r_json[0].AR},-Ft ${r_json[0].MENNYISEG} ${r_json[0].MEEGYS}</h5>
+					<p>${r_json[0].LEIRAS}</p>
+					<img class="img-fluid" src="${r_json[0].FOTOLINK}"/>
+				`;
 				$("#rekord1").html(s);            
 			}); 
 				
@@ -78,30 +80,31 @@
 			var reccount = count_json[0].db | 0;
 			if (reccount > 0) {
 				var limit =  $('#limit1').val();
-				var offset = Math.floor(reccount / limit) + (reccount % limit > 0? 1 : 0);
+				var offset = Math.floor(reccount / limit) + (reccount % limit > 0 ? 1 : 0);
 				$('#offset1').empty();
 				var sel = "";
 	
 				for (var i=0; i < offset; ++i) {
-					sel = (i==old_offset? "selected": "");
-					$('#offset1').append(`<option ${sel} value="${i}">${i+1}.lap</option>`);
+					sel = (i == old_offset ? "selected" : "");
+					$('#offset1').append(`<option ${sel} value="${i}">${i + 1}.lap</option>`);
 				}
 	
 				var result = ajax_post(url, 1);
 				$("#tabla1 tbody").empty();
 	
 				for (var i=0; i < result.length; i++) {
-					var s = 
-					`<tr class="xsor table-${i%2==0?'primary':'light'}" id="${result[i].ID_TERMEK}">
-					 <td>${result[i].ID_TERMEK}</td>
-					 <td>${result[i].NEV}</td>
-					 <td>${result[i].AR}</td>
-					 <td>${result[i].MENNYISEG}</td>
-					 <td>${result[i].MEEGYS}</td>
-					 <tr>`;
+					var s = `
+						<tr class="xsor table-${ i % 2 == 0 ? 'primary' : 'light' }" id="${ result[i].ID_TERMEK }">
+						<td>${result[i].ID_TERMEK}</td>
+						<td>${result[i].NEV}</td>
+						<td>${result[i].AR}</td>
+						<td>${result[i].MENNYISEG}</td>
+						<td>${result[i].MEEGYS}</td>
+						<tr>
+					`;
 					$("#tabla1 tbody").append(s);      
 				}
-	
+
 				mySend({text:`Összesen ${reccount} termék felel meg a feltételnek.`, tip:"success", mp:3});
 			} else mySend({text:`Nincs a feltételnek megfelelő termék.`, tip:"danger", mp:0});
 		}
@@ -121,8 +124,7 @@
 			for (var i = 0; i < k_json.length; ++i) {
 				listItems  += `<option value='${k_json[i].ID_KATEGORIA}'>${k_json[i].KATEGORIA}</option>`;
 			}
-			$("#kategoria1").append(listItems);
-	
+			$("#kategoria1")   .append(listItems);
 			$("#save_button")  .click(function() { });
 			$("#search_button").click(function() { Search_rekord(); });
 			$("#insert_button").click(function() { ID = 0; Edit_rekord( ID ); });
@@ -148,9 +150,7 @@
 					$('#login_modal').modal('hide');
 					mySend({text:`Sikeres login: ${login_json[0].NEV}!`, tip:"success", mp:3});
 					$("#login_button").html('Logout');
-				} else {
-					mySend({text:`Hibás felhasználónév, vagy jelszó<br>Nincs is ilyen júzer!`, tip:"danger", mp:5});
-				}
+				} else mySend({text:`Hibás felhasználónév, vagy jelszó<br>Nincs is ilyen júzer!`, tip:"danger", mp:5});
 			});
 		});
 	</script>
