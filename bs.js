@@ -17,6 +17,10 @@ const conn = mysql.createConnection( {
 
 app.use(session({ key:'user_sid', secret:'nagyontitkos', resave:true, saveUninitialized:true }));
 
+
+// console.log(util.inspect(data, false, null, true));
+
+
 function strE(s) { return s.replace("'","").replace("\"","").replace("`",""),replace("\t","").replace("\\","");}
 
 function gen_SQL(req) {
@@ -88,8 +92,6 @@ app.post('/login',  (req, res) => {
 	
 	conn.query(sql, (error, results) => {    
 		var data = error ? error : JSON.parse(JSON.stringify(results));
-		console.log("$$$$$$$$$$$$");
-		console.log(util.inspect(data, false, null, true));
 		if (!error && data.length == 1)  {
 			session_data         = req.session;
 			session_data.ID_USER = data[0].ID_USER;
@@ -116,8 +118,6 @@ app.post('/logout', (req, res) => {
 function Send_to_JSON (req, res, sql) {
 	conn.query(sql, (error, results) => {
 		var data = error ? error : JSON.parse(JSON.stringify(results));
-		console.log("///////////");
-		console.log(util.inspect(data, false, null, true /* enable colors */));
 		res.set('Content-Type', 'application/json; charset=UTF-8');
 		res.send(data);
 		res.end();

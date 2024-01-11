@@ -112,6 +112,15 @@ function Search_rekord() {
 }
 
 function Edit_rekord( idx ) {
+	var r_json = ajax_post("rekord/" + ID, 1);
+	$("#mod_nev").val(r_json[0].NEV);
+	$('#mod_azon').val(r_json[0].ID_TERMEK);
+    $('#mod_leiras').val(r_json[0].LEIRAS);
+    $('#mod_ar').val(r_json[0].AR);
+    $('#mod_db').val(r_json[0].MENNYISEG);
+    $('#mod_meegys').val(r_json[0].MEEGYS);
+	var datum = new Date();
+	$("#mod_datum").val(datum.toISOString().split('T')[0]);
 	$("#myModal0").modal("show");
 }
 
