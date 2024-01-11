@@ -9,328 +9,332 @@
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/js/bootstrap.bundle.min.js"></script>
 	<script src="jquery-3.6.0.min.js"></script>
-	<script type="text/javascript">
-		var ORDER = 1;
-		var ID = 0;                      
-		
-		function ajax_get( urlsor, hova, tipus, aszinkron ) {
-			$.ajax({url: urlsor, type:"get", async:aszinkron, cache:false, dataType:tipus===0?'html':'json',
-				beforeSend: function(xhr) {  }, 
-				success:    function(data) { $(hova).html(data); },
-				error:      function(jqXHR, textStatus, errorThrown) { mySend({text:jqXHR.responseText, tip:"danger", mp:0}); },
-				complete:   function() {  }   
-			});
-			return true;
-		};
-	
-		function ajax_post( urlsor, tipus  ) {
-			var s = "";
-			$.ajax({url: urlsor, type:"post", async:false, cache:false, dataType:tipus===0?'html':'json',
-				beforeSend: function(xhr)   {  }, 
-				success:    function(data)  { s = data; },
-				error:      function(jqXHR, textStatus, errorThrown) {mySend({text:jqXHR.responseText, tip:"danger", mp:0});},
-				complete:   function()      {  } 
-			});
-			return s;
-		};  
-	
-		function mySend( ops ) {
-			var defOps = {text:"", tip:"success", mp:5 };
-			ops = $.extend({}, defOps, ops);
-			$("#toast1").removeClass("bg-info");
-			$("#toast1").removeClass("bg-success");
-			$("#toast1").removeClass("bg-warning");
-			$("#toast1").removeClass("bg-danger");
-			$("#toast1").addClass("bg-"+ops.tip);              
-			$("#toast1 .toast-body").html(ops.text); 
-			if (ops.mp == 0) { $("#toast1").toast({ autohide: false }); } 
-			$("#toast1").toast("show");
-		};
-	
-	/*-----------------------------*/
-		function orderby( num )   {
-			ID = 0;
-			ORDER = (ORDER === num) ? num * -1 : num;
-			Search_rekord();    
-		}
-	
-	 
-		function Search_rekord() {
-			$("tr.xsor").off('click');
-	
-			$(document).on("click", "tr.xsor", function () {
-				ID = $(this).attr("id");
-				var r_json = ajax_post("rekord/" + ID, 1);
-				var s = `
-					<h3>ID: [${r_json[0].ID_TERMEK}] ${r_json[0].NEV}</h3>
-					<h5>${r_json[0].AR},-Ft ${r_json[0].MENNYISEG} ${r_json[0].MEEGYS}</h5>
-					<p>${r_json[0].LEIRAS}</p>
-					<img class="img-fluid" src="${r_json[0].FOTOLINK}"/>
-				`;
-				$("#rekord1").html(s);            
-			}); 
-				
-			ID = 0;
-			var old_offset =  $('#offset1').val();
-			var url = "tabla?"+$("#form1").serialize()+"&order="+ORDER;
-			var count_json = ajax_post("reccount?"+$("#form1").serialize(), 1) ;
-	
-			console.log(url);
-	
-			var reccount = count_json[0].db | 0;
-			if (reccount > 0) {
-				var limit =  $('#limit1').val();
-				var offset = Math.floor(reccount / limit) + (reccount % limit > 0 ? 1 : 0);
-				$('#offset1').empty();
-				var sel = "";
-	
-				for (var i=0; i < offset; ++i) {
-					sel = (i == old_offset ? "selected" : "");
-					$('#offset1').append(`<option ${sel} value="${i}">${i + 1}.lap</option>`);
-				}
-	
-				var result = ajax_post(url, 1);
-				$("#tabla1 tbody").empty();
-	
-				for (var i=0; i < result.length; i++) {
-					var s = `
-						<tr class="xsor table-${ i % 2 == 0 ? 'primary' : 'light' }" id="${ result[i].ID_TERMEK }">
-						<td>${result[i].ID_TERMEK}</td>
-						<td>${result[i].NEV}</td>
-						<td>${result[i].AR}</td>
-						<td>${result[i].MENNYISEG}</td>
-						<td>${result[i].MEEGYS}</td>
-						<tr>
-					`;
-					$("#tabla1 tbody").append(s);      
-				}
 
-				mySend({text:`Összesen ${reccount} termék felel meg a feltételnek.`, tip:"success", mp:3});
-			} else mySend({text:`Nincs a feltételnek megfelelő termék.`, tip:"danger", mp:0});
+	<script type="text/javascript">
+
+var ORDER = 1;
+var ID = 0;                      
+
+function ajax_get( urlsor, hova, tipus, aszinkron ) {
+	$.ajax({url: urlsor, type:"get", async:aszinkron, cache:false, dataType:tipus===0?'html':'json',
+		beforeSend: function(xhr) {  }, 
+		success:    function(data) { $(hova).html(data); },
+		error:      function(jqXHR, textStatus, errorThrown) { mySend({text:jqXHR.responseText, tip:"danger", mp:0}); },
+		complete:   function() {  }   
+	});
+	return true;
+};
+
+function ajax_post( urlsor, tipus  ) {
+	var s = "";
+	$.ajax({url: urlsor, type:"post", async:false, cache:false, dataType:tipus===0?'html':'json',
+		beforeSend: function(xhr)   {  }, 
+		success:    function(data)  { s = data; },
+		error:      function(jqXHR, textStatus, errorThrown) {mySend({text:jqXHR.responseText, tip:"danger", mp:0});},
+		complete:   function()      {  } 
+	});
+	return s;
+};  
+
+function mySend( ops ) {
+	var defOps = {text:"", tip:"success", mp:5 };
+	ops = $.extend({}, defOps, ops);
+	$("#toast1").removeClass("bg-info");
+	$("#toast1").removeClass("bg-success");
+	$("#toast1").removeClass("bg-warning");
+	$("#toast1").removeClass("bg-danger");
+	$("#toast1").addClass("bg-"+ops.tip);              
+	$("#toast1 .toast-body").html(ops.text); 
+	if (ops.mp == 0) { $("#toast1").toast({ autohide: false }); } 
+	$("#toast1").toast("show");
+};
+
+/*-----------------------------*/
+function orderby( num )   {
+	ID = 0;
+	ORDER = (ORDER === num) ? num * -1 : num;
+	Search_rekord();    
+}
+
+
+function Search_rekord() {
+	$("tr.xsor").off('click');
+
+	$(document).on("click", "tr.xsor", function () {
+		ID = $(this).attr("id");
+		var r_json = ajax_post("rekord/" + ID, 1);
+		var s = `
+			<h3>ID: [${r_json[0].ID_TERMEK}] ${r_json[0].NEV}</h3>
+			<h5>${r_json[0].AR},-Ft ${r_json[0].MENNYISEG} ${r_json[0].MEEGYS}</h5>
+			<p>${r_json[0].LEIRAS}</p>
+			<img class="img-fluid" src="${r_json[0].FOTOLINK}"/>
+		`;
+		$("#rekord1").html(s);            
+	}); 
+		
+	ID = 0;
+	var old_offset =  $('#offset1').val();
+	var url = "tabla?"+$("#form1").serialize()+"&order="+ORDER;
+	var count_json = ajax_post("reccount?"+$("#form1").serialize(), 1) ;
+
+	console.log(url);
+
+	var reccount = count_json[0].db | 0;
+	if (reccount > 0) {
+		var limit =  $('#limit1').val();
+		var offset = Math.floor(reccount / limit) + (reccount % limit > 0 ? 1 : 0);
+		$('#offset1').empty();
+		var sel = "";
+
+		for (var i=0; i < offset; ++i) {
+			sel = (i == old_offset ? "selected" : "");
+			$('#offset1').append(`<option ${sel} value="${i}">${i + 1}.lap</option>`);
 		}
-	
-		function Edit_rekord( idx ) {
-			$("#myModal0").modal("show");
+
+		var result = ajax_post(url, 1);
+		$("#tabla1 tbody").empty();
+
+		for (var i=0; i < result.length; i++) {
+			var s = `
+				<tr class="xsor table-${ i % 2 == 0 ? 'primary' : 'light' }" id="${ result[i].ID_TERMEK }">
+				<td>${result[i].ID_TERMEK}</td>
+				<td>${result[i].NEV}</td>
+				<td>${result[i].AR}</td>
+				<td>${result[i].MENNYISEG}</td>
+				<td>${result[i].MEEGYS}</td>
+				<tr>
+			`;
+			$("#tabla1 tbody").append(s);      
 		}
+
+		mySend({text:`Összesen ${reccount} termék felel meg a feltételnek.`, tip:"success", mp:3});
+	} else mySend({text:`Nincs a feltételnek megfelelő termék.`, tip:"danger", mp:0});
+}
+
+function Edit_rekord( idx ) {
+	$("#myModal0").modal("show");
+}
+
+function Delete_rekord( idx ) {
+	$("#myModal1 .modal-body").html(`Törlöd a(z) '${idx}' azonosítójú terméket?`);
+	$('#myModal1').off('click');                          // unbind, különben N.szer futna le az N. hívásra !!
+	$("#myModal1").on("click", ".btn-success", function() {
+		var json_obj = ajax_post("delete/" + ID, 1); 
+		if (json_obj.affectedRows == 1) mySend({ text: "Törlés OK..." });
+		else mySend({ text: `Hiba: nincs meg az ID:[${idx}] azonosítójú rekord!<br>${json_obj.message}`, tip:"danger", mp:20 });
+	});
+	$("#myModal1").modal("show");
+}
+
+$(document).ready(function() {
+	$("#kategoria1").empty();
+	var listItems  = "<option selected value='0'>--- minden ---</option>";
+	var k_json = ajax_post("kategoria", 1 );
+	for (var i = 0; i < k_json.length; ++i) {
+		listItems  += `<option value='${k_json[i].ID_KATEGORIA}'>${k_json[i].KATEGORIA}</option>`;
+	}
+	$("#kategoria1")   .append(listItems);
+	$("#save_button")  .click(function() { });
+	$("#search_button").click(function() { Search_rekord(); });
+	$("#insert_button").click(function() { ID = 0; Edit_rekord( ID ); });
+	$("#modify_button").click(function() { if (ID > 0) { Edit_rekord( ID ); }});
+	$("#delete_button").click(function() { if (ID > 0) { Delete_rekord( ID ); }});
+
+	$("#login_button") .click(function() {
+		if ($("#login_button").html() == "Login") {
+			$('#login_modal').modal('show'); 
+		} else {
+			var logout_json = ajax_post("logout", 1) ;  
+			$("#login_button").html('Login');
+			mySend({text:`Sikeres logout`, tip:"success", mp:3});
+			$("#user").html("Login: még senki..." );
+		}  
+	});
 	
-		function Delete_rekord( idx ) {
-			$("#myModal1 .modal-body").html(`Törlöd a(z) '${idx}' azonosítójú terméket?`);
-			$('#myModal1').off('click');                          // unbind, különben N.szer futna le az N. hívásra !!
-    		$("#myModal1").on("click", ".btn-success", function() {
-				var json_obj = ajax_post("delete/" + ID, 1); 
-				if (json_obj.affectedRows == 1) mySend({ text: "Törlés OK..." });
-				else mySend({ text: `Hiba: nincs meg az ID:[${idx}] azonosítójú rekord!<br>${json_obj.message}`, tip:"danger", mp:20 });
-			});
-			$("#myModal1").modal("show");
-		}
-	
-		$(document).ready(function() {
-			$("#kategoria1").empty();
-			var listItems  = "<option selected value='0'>--- minden ---</option>";
-			var k_json = ajax_post("kategoria", 1 );
-			for (var i = 0; i < k_json.length; ++i) {
-				listItems  += `<option value='${k_json[i].ID_KATEGORIA}'>${k_json[i].KATEGORIA}</option>`;
-			}
-			$("#kategoria1")   .append(listItems);
-			$("#save_button")  .click(function() { });
-			$("#search_button").click(function() { Search_rekord(); });
-			$("#insert_button").click(function() { ID = 0; Edit_rekord( ID ); });
-			$("#modify_button").click(function() { if (ID > 0) { Edit_rekord( ID ); }});
-			$("#delete_button").click(function() { if (ID > 0) { Delete_rekord( ID ); }});
-	
-			$("#login_button") .click(function() {
-				if ($("#login_button").html() == "Login") {
-					$('#login_modal').modal('show'); 
-				} else {
-					var logout_json = ajax_post("logout", 1) ;  
-					$("#login_button").html('Login');
-					mySend({text:`Sikeres logout`, tip:"success", mp:3});
-					$("#user").html("Login: még senki..." );
-				}  
-			});
-			
-			$("#login_oksi_button").click(function() { 
-				console.log($("#login_button").html() );
-				var login_json = ajax_post("login?" + $("#form_login").serialize(), 1) ;  
-				if (login_json.length === 1 ) {  
-					$("#user").html("login: " + login_json[0].NEV+ "<br>[" + login_json[0].EMAIL + "]" );
-					$('#login_modal').modal('hide');
-					mySend({text:`Sikeres login: ${login_json[0].NEV}!`, tip:"success", mp:3});
-					$("#login_button").html('Logout');
-				} else mySend({text:`Hibás felhasználónév, vagy jelszó<br>Nincs is ilyen júzer!`, tip:"danger", mp:5});
-			});
-		});
+	$("#login_oksi_button").click(function() { 
+		console.log($("#login_button").html() );
+		var login_json = ajax_post("login?" + $("#form_login").serialize(), 1) ;  
+		if (login_json.length === 1 ) {  
+			$("#user").html("login: " + login_json[0].NEV+ "<br>[" + login_json[0].EMAIL + "]" );
+			$('#login_modal').modal('hide');
+			mySend({text:`Sikeres login: ${login_json[0].NEV}!`, tip:"success", mp:3});
+			$("#login_button").html('Logout');
+		} else mySend({text:`Hibás felhasználónév, vagy jelszó<br>Nincs is ilyen júzer!`, tip:"danger", mp:5});
+	});
+});
+
 	</script>
+
 </head>
 
 <body>
 
-	<div class="p-3 bg-primary text-white text-center">
-		<h3>12.SZ SQL tokenizer és JSON (ver:2023.10:17)</h3>
+<div class="p-3 bg-primary text-white text-center">
+	<h3>12.SZ SQL tokenizer és JSON (ver:2023.10:17)</h3>
+</div>
+
+<nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+	<div class="container-fluid">
+		<form class="d-flex m-auto" id="form1">
+			<select class="form-select me-3" id="kategoria1" name="kategoria" style="width:400px;"></select>     
+			<input class="form-control me-3" id="nev1"   name="nev"   type="text" placeholder="termék neve" style="width:300px;">
+			<select class="form-select me-3" id="limit1" name="limit" title="max. rekodszám" style="width:100px;">
+				<option value="20" selected>20</option>
+				<option value="50">50</option>
+				<option value="100">100</option>
+				<option value="200">200</option>
+			</select> 
+			<select class="form-select me-3" id="offset1" name="offset" title="offset" style="width:100px;"></select> 
+			<button id="search_button" type="button" class="btn btn-primary me-3 bi bi-search"> Keres</button>
+			<button id="modify_button" type="button" class="btn btn-success me-3 bi bi-pencil-fill"> Módosít</button>
+			<button id="delete_button" type="button" class="btn btn-danger  me-3 bi bi-trash"> Töröl</button>
+			<button id="insert_button" type="button" class="btn btn-warning me-3 bi bi-plus-circle"> Új termék</button>
+			<button id="login_button"  type="button" class="btn btn-info    me-3 bi bi-person">Login</button>
+		</form>
+		<div id="user" class="badge text-wrap text-light"></div>
 	</div>
+</nav>
 
-	<nav class="navbar navbar-expand-sm navbar-dark bg-dark">
-		<div class="container-fluid">
-			<form class="d-flex m-auto" id="form1">
-				<select class="form-select me-3" id="kategoria1" name="kategoria" style="width:400px;"></select>     
-				<input class="form-control me-3" id="nev1"   name="nev"   type="text" placeholder="termék neve" style="width:300px;">
-				<select class="form-select me-3" id="limit1" name="limit" title="max. rekodszám" style="width:100px;">
-					<option value="20" selected>20</option>
-					<option value="50">50</option>
-					<option value="100">100</option>
-					<option value="200">200</option>
-				</select> 
-				<select class="form-select me-3" id="offset1" name="offset" title="offset" style="width:100px;"></select> 
-				<button id="search_button" type="button" class="btn btn-primary me-3 bi bi-search"> Keres</button>
-				<button id="modify_button" type="button" class="btn btn-success me-3 bi bi-pencil-fill"> Módosít</button>
-				<button id="delete_button" type="button" class="btn btn-danger  me-3 bi bi-trash"> Töröl</button>
-				<button id="insert_button" type="button" class="btn btn-warning me-3 bi bi-plus-circle"> Új termék</button>
-				<button id="login_button"  type="button" class="btn btn-info    me-3 bi bi-person">Login</button>
-			</form>
-			<div id="user" class="badge text-wrap text-light"></div>
-		</div>
-	</nav>
-	
-	<div class="container m-2">
-		<div class="row">
-			<div class="col-lg-8"> 
-				<div id="tabla1_poz"> 
-					<table id="tabla1" class="table table-hover" style="cursor: pointer;">
-						<thead>
-							<tr>
-								<th style="width:10%;" onclick="orderby(1);">ID</th>
-								<th style="width:60%;" onclick="orderby(2);">NÉV</th>
-								<th style="width:10%;" onclick="orderby(3);">ÁR</th>
-								<th style="width:10%;" onclick="orderby(4);">Mennyiség</th>
-								<th style="width:10%;" onclick="orderby(5);">meegys.</th>
-							</tr>  
-						</thead>
-						<tbody>
-							<!-- Ide jön a táblázat (ajax) --> 
-						</tbody>
-					</table>
-				</div>
-			</div>
-			<div class="col-lg-4">
-				<div id="rekord1" class="mt-4 p-3 bg-secondary text-white rounded">
-					<!-- Ide jön a rekord -->
-				</div>
-			</div>
-		</div> 
-	</div>
-
-	<div class="mt-4 p-3 bg-dark text-white text-center">
-		<p><a href="https://www.csany-zeg.hu/" target="_blank">Csány László Technikum</a> - 2023</p>
-	</div>
-
-	<!-- modal login ablak -->
-	<div class="modal" id="login_modal">
-		<div class="modal-dialog modal-lg">
-			<div class="modal-content">
-				<div class="modal-header bg-secondary text-white">
-					<h4 id="idx_login" class="modal-title">User login</h4>
-					<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-				</div>
-
-				<div id="idx2" class="modal-body bg-light">     
-					<form id="form_login" class="row"> 
-
-						<div class="form-floating my-1">
-							<input type="text" class="form-control" id="login_nev" name="login_nev"  value="troppauer@emailcim.com">
-							<label for="login_nev">user neve</label>
-						</div>
-
-						<div class="form-floating my-1">
-							<input type="password" class="form-control" id="login_passwd" name="login_passwd" value="123456">
-							<label for="login_passwd">jelszó</label>
-						</div>
-
-					</form>
-				</div>
-
-				<div class="modal-footer bg-light">
-					<button id="login_oksi_button" type="button" class="btn btn-success" data-bs-dismiss="modal"> <i class="bi bi-save"></i> OK</button>
-				</div>
-
+<div class="container m-2">
+	<div class="row">
+		<div class="col-lg-8"> 
+			<div id="tabla1_poz"> 
+				<table id="tabla1" class="table table-hover" style="cursor: pointer;">
+					<thead>
+						<tr>
+							<th style="width:10%;" onclick="orderby(1);">ID</th>
+							<th style="width:60%;" onclick="orderby(2);">NÉV</th>
+							<th style="width:10%;" onclick="orderby(3);">ÁR</th>
+							<th style="width:10%;" onclick="orderby(4);">Mennyiség</th>
+							<th style="width:10%;" onclick="orderby(5);">meegys.</th>
+						</tr>  
+					</thead>
+					<tbody>
+						<!-- Ide jön a táblázat (ajax) --> 
+					</tbody>
+				</table>
 			</div>
 		</div>
-	</div>
-
-	<!-- modal adatbevitel ablak -->
-	<div class="modal" id="myModal0">
-		<div class="modal-dialog modal-lg">
-			<div class="modal-content">
-				<div class="modal-header bg-secondary text-white">
-					<h4 id="idx1" class="modal-title">Modal Heading</h4>
-					<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-				</div>
-
-				<div id="idx0" class="modal-body bg-light">     
-					<form id="mod1" class="row"> 
-						<div class="form-floating my-1">
-							<select class="form-select" id="mod_kat" name="mod_kat"></select>     
-							<label for="mod_kat">Kategória</label>
-						</div>
-						<div class="form-floating my-1">
-							<input type="text" class="form-control" id="mod_nev" name="mod_nev">
-							<label for="mod_nev">Termék neve</label>
-						</div>
-						<div class="form-floating my-1">
-							<input type="text" class="form-control" id="mod_azon" name="mod_azon">
-							<label for="mod_azon">Azonosító</label>
-						</div>
-						<div class="form-floating my-1 mr-1" style="width:190px;">
-							<input type="number" class="form-control" id="mod_ar" name="mod_ar">
-							<label for="mod_ar">Ár</label>
-						</div>
-						<div class="form-floating my-1 mr-1" style="width:190px;">
-							<input type="number" class="form-control" id="mod_db" name="mod_db">
-							<label for="mod_db">Mennyiség</label>
-						</div>
-						<div class="form-floating my-1 mr-1" style="width:190px;">
-							<input type="text" class="form-control" id="mod_meegys" name="mod_meegys">
-							<label for="mod_meegys">Egység</label>
-						</div>
-						<div class="form-floating my-1 mr-1" style="width:200px;">
-							<input type="date" class="form-control" id="mod_datum" name="mod_datum">
-							<label for="mod_datum">Dátum</label>
-						</div>
-						<div class="form-floating my-1">
-							<textarea class="form-control" rows="4" id="mod_leiras" name="mod_leiras"></textarea>
-							<label for="mod_leiras">Leírás</label>
-						</div>
-					</form>
-				</div>
-
-				<div class="modal-footer bg-light">
-					<button id="save_button" type="button" class="btn btn-success" data-bs-dismiss="modal"> <i class="bi bi-save2"></i> Ment</button>
-				</div>
+		<div class="col-lg-4">
+			<div id="rekord1" class="mt-4 p-3 bg-secondary text-white rounded">
+				<!-- Ide jön a rekord -->
 			</div>
 		</div>
-	</div>
+	</div> 
+</div>
 
-	<!-- toast mysend -->
-	<div id= "toast1" class="toast bg-success text-white hide" style="position:fixed; right:10px; bottom:10px;">
-		<div class="toast-header">
-			<strong class="me-auto"><i class="bi-gift-fill"></i> Message...</strong>
-			<button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+<div class="mt-4 p-3 bg-dark text-white text-center">
+	<p><a href="https://www.csany-zeg.hu/" target="_blank">Csány László Technikum</a> - 2023</p>
+</div>
+
+<!-- modal login ablak -->
+<div class="modal" id="login_modal">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header bg-secondary text-white">
+				<h4 id="idx_login" class="modal-title">User login</h4>
+				<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+			</div>
+
+			<div id="idx2" class="modal-body bg-light">     
+				<form id="form_login" class="row"> 
+
+					<div class="form-floating my-1">
+						<input type="text" class="form-control" id="login_nev" name="login_nev"  value="troppauer@emailcim.com">
+						<label for="login_nev">user neve</label>
+					</div>
+
+					<div class="form-floating my-1">
+						<input type="password" class="form-control" id="login_passwd" name="login_passwd" value="123456">
+						<label for="login_passwd">jelszó</label>
+					</div>
+
+				</form>
+			</div>
+
+			<div class="modal-footer bg-light">
+				<button id="login_oksi_button" type="button" class="btn btn-success" data-bs-dismiss="modal"> <i class="bi bi-save"></i> OK</button>
+			</div>
+
 		</div>
-		<div class="toast-body"></div>
 	</div>
+</div>
 
-	<!-- modal popup ablak -->
-	<div class="modal" id="myModal1">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header"><h4 class="modal-title">Megerősítés</h4></div>
-				<div class="modal-body"></div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-default" data-bs-dismiss="modal">Cancel</button>
-					<button type="button" class="btn btn-success" data-bs-dismiss="modal">OK</button>
-				</div>
+<!-- modal adatbevitel ablak -->
+<div class="modal" id="myModal0">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header bg-secondary text-white">
+				<h4 id="idx1" class="modal-title">Modal Heading</h4>
+				<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+			</div>
+
+			<div id="idx0" class="modal-body bg-light">     
+				<form id="mod1" class="row"> 
+					<div class="form-floating my-1">
+						<select class="form-select" id="mod_kat" name="mod_kat"></select>     
+						<label for="mod_kat">Kategória</label>
+					</div>
+					<div class="form-floating my-1">
+						<input type="text" class="form-control" id="mod_nev" name="mod_nev">
+						<label for="mod_nev">Termék neve</label>
+					</div>
+					<div class="form-floating my-1">
+						<input type="text" class="form-control" id="mod_azon" name="mod_azon">
+						<label for="mod_azon">Azonosító</label>
+					</div>
+					<div class="form-floating my-1 mr-1" style="width:190px;">
+						<input type="number" class="form-control" id="mod_ar" name="mod_ar">
+						<label for="mod_ar">Ár</label>
+					</div>
+					<div class="form-floating my-1 mr-1" style="width:190px;">
+						<input type="number" class="form-control" id="mod_db" name="mod_db">
+						<label for="mod_db">Mennyiség</label>
+					</div>
+					<div class="form-floating my-1 mr-1" style="width:190px;">
+						<input type="text" class="form-control" id="mod_meegys" name="mod_meegys">
+						<label for="mod_meegys">Egység</label>
+					</div>
+					<div class="form-floating my-1 mr-1" style="width:200px;">
+						<input type="date" class="form-control" id="mod_datum" name="mod_datum">
+						<label for="mod_datum">Dátum</label>
+					</div>
+					<div class="form-floating my-1">
+						<textarea class="form-control" rows="4" id="mod_leiras" name="mod_leiras"></textarea>
+						<label for="mod_leiras">Leírás</label>
+					</div>
+				</form>
+			</div>
+
+			<div class="modal-footer bg-light">
+				<button id="save_button" type="button" class="btn btn-success" data-bs-dismiss="modal"> <i class="bi bi-save2"></i> Ment</button>
 			</div>
 		</div>
 	</div>
+</div>
+
+<!-- toast mysend -->
+<div id= "toast1" class="toast bg-success text-white hide" style="position:fixed; right:10px; bottom:10px;">
+	<div class="toast-header">
+		<strong class="me-auto"><i class="bi-gift-fill"></i> Message...</strong>
+		<button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+	</div>
+	<div class="toast-body"></div>
+</div>
+
+<!-- modal popup ablak -->
+<div class="modal" id="myModal1">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header"><h4 class="modal-title">Megerősítés</h4></div>
+			<div class="modal-body"></div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-bs-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-success" data-bs-dismiss="modal">OK</button>
+			</div>
+		</div>
+	</div>
+</div>
 
 </body>
 </html>

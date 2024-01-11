@@ -3,6 +3,7 @@ const mysql   = require('mysql');
 const app     = express();
 const port    = 3000;
 const session = require('express-session');
+const util = require('util');
 app.use(express.static('public')); 
 var session_data;
 
@@ -68,7 +69,7 @@ app.post('/rekord/:id', (req, res) => {
 
 app.post('/delete/:id', (req, res) => {
 	session_data = req.session;
-	if (session_data.nev) {
+	if (session_data.NEV) {
 		var sql = `delete from IT_termekek where ID_TERMEK=${req.params.id} LIMIT 1;`;
 		Send_to_JSON(req, res, sql);
 	} else {
@@ -85,17 +86,17 @@ app.post('/login',  (req, res) => {
 	var psw = (req.query.login_passwd? req.query.login_passwd  : "");
 	var sql = `select ID_USER, NEV, EMAIL from userek where EMAIL="${user}" and PASSWORD=md5("${psw}") limit 1;`;
 	
-	conn.query(sql, null, function (json_data, error) {    
-		var data = error ? error : JSON.parse(json_data);
-		if (!error) {
-			if (data.count == 1)  {
-				session_data         = req.session;
-				session_data.ID_USER = data.dataset[0].ID_USER;
-				session_data.EMAIL   = data.dataset[0].EMAIL;
-				session_data.NEV     = data.dataset[0].NEV;
-				session_data.MOST    = Date.now();
-				console.log("Setting session data:username=%s and id_user=%s", session_data.NEV, session_data.ID_USER);
-			}
+	conn.query(sql, (error, results) => {    
+		var data = error ? error : JSON.parse(JSON.stringify(results));
+		console.log("$$$$$$$$$$$$");
+		console.log(util.inspect(data, false, null, true));
+		if (!error && data.length == 1)  {
+			session_data         = req.session;
+			session_data.ID_USER = data[0].ID_USER;
+			session_data.EMAIL   = data[0].EMAIL;
+			session_data.NEV     = data[0].NEV;
+			session_data.MOST    = Date.now();
+			console.log("Setting session data:username=%s and id_user=%s", session_data.NEV, session_data.ID_USER);
 		}
 
 		res.set('Content-Type', 'application/json; charset=UTF-8');
@@ -107,14 +108,16 @@ app.post('/login',  (req, res) => {
 app.post('/logout', (req, res) => {  
 	session_data = req.session;
 	session_data.destroy(function(err) {
-		res.json('Session destroy successfully');
+		res.json('Session destroyed successfully');
 		res.end();
 	}); 
 });
 
 function Send_to_JSON (req, res, sql) {
 	conn.query(sql, (error, results) => {
-		var data = error ? error : JSON.parse(JSON.stringify(results)); 
+		var data = error ? error : JSON.parse(JSON.stringify(results));
+		console.log("///////////");
+		console.log(util.inspect(data, false, null, true /* enable colors */));
 		res.set('Content-Type', 'application/json; charset=UTF-8');
 		res.send(data);
 		res.end();
