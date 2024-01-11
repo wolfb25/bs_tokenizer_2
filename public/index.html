@@ -114,6 +114,13 @@
 		}
 	
 		function Delete_rekord( idx ) {
+			$("#myModal1 .modal-body").html(`Törlöd a(z) '${idx}' azonosítójú terméket?`);
+			$('#myModal1').off('click');                          // unbind, különben N.szer futna le az N. hívásra !!
+    		$("#myModal1").on("click", ".btn-success", function() {
+				var json_obj = ajax_post("delete/" + ID, 1); 
+				if (json_obj.affectedRows == 1) mySend({ text: "Törlés OK..." });
+				else mySend({ text: `Hiba: nincs meg az ID:[${idx}] azonosítójú rekord!<br>${json_obj.message}`, tip:"danger", mp:20 });
+			});
 			$("#myModal1").modal("show");
 		}
 	
@@ -144,9 +151,9 @@
 			
 			$("#login_oksi_button").click(function() { 
 				console.log($("#login_button").html() );
-				var login_json = ajax_post("login?"+$("#form_login").serialize(), 1) ;  
+				var login_json = ajax_post("login?" + $("#form_login").serialize(), 1) ;  
 				if (login_json.length === 1 ) {  
-					$("#user").html("login: "+login_json[0].NEV+ "<br>["+login_json[0].EMAIL+"]" );
+					$("#user").html("login: " + login_json[0].NEV+ "<br>[" + login_json[0].EMAIL + "]" );
 					$('#login_modal').modal('hide');
 					mySend({text:`Sikeres login: ${login_json[0].NEV}!`, tip:"success", mp:3});
 					$("#login_button").html('Logout');

@@ -61,9 +61,21 @@ app.post('/kategoria', (req, res) => {
 	Send_to_JSON(req, res, sql);
 });
 
-app.post('/rekord/:id',(req, res) => {
+app.post('/rekord/:id', (req, res) => {
 	var sql = `select * from IT_termekek where ID_TERMEK=${req.params.id}`;
 	Send_to_JSON(req, res, sql);
+});
+
+app.post('/delete/:id', (req, res) => {
+	session_data = req.session;
+	if (session_data.nev) {
+		var sql = `delete from IT_termekek where ID_TERMEK=${req.params.id} LIMIT 1;`;
+		Send_to_JSON(req, res, sql);
+	} else {
+		res.set('Content-Type', 'application/json; charset=UTF-8');
+		res.send("Bejelentkezés szükséges!");
+		res.end();
+	}
 });
 
 
