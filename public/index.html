@@ -122,6 +122,13 @@ function Edit_rekord( idx ) {
 	var datum = new Date();
 	$("#mod_datum").val(datum.toISOString().split('T')[0]);
 	$("#myModal0").modal("show");
+
+	$('#mod_kat').empty();
+    var listItems;
+    var k_json = ajax_post("kategoria", 1 );
+    for (var i = 0; i < k_json.length; ++i) listItems += `<option class='mod_kat_option' value='${k_json[i].ID_KATEGORIA}'>${k_json[i].KATEGORIA}</option>`;  
+    $('#mod_kat').append(listItems);
+    $('#mod_kat').val(r_json[0].ID_KATEGORIA).change();
 }
 
 function Delete_rekord( idx ) {
@@ -281,7 +288,9 @@ $(document).ready(function() {
 			<div id="idx0" class="modal-body bg-light">     
 				<form id="mod1" class="row"> 
 					<div class="form-floating my-1">
-						<select class="form-select" id="mod_kat" name="mod_kat"></select>     
+						<select class="form-select" id="mod_kat" name="mod_kat">
+							<!-- ide mennek a cuccok -->
+						</select>     
 						<label for="mod_kat">Kategória</label>
 					</div>
 					<div class="form-floating my-1">
